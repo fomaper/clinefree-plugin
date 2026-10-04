@@ -130,4 +130,17 @@ else
   echo "[5/5] skipped verification"
 fi
 
+# Leave the host as we found it: the staging copy and the build image are only
+# needed for the duration of a deploy.
+ssh_do "rm -rf '$REMOTE_SRC' '$REMOTE_SRC.tgz'" >/dev/null 2>&1 || true
+
 echo "done."
+
+# Note on disk usage on the host: each run reuses one build tag and removes it
+# afterwards, so images do not accumulate. What does accumulate is Docker's
+# BuildKit cache (the compiled Go standard library, which is what makes later
+# builds fast). Flush it when you want the space back:
+#
+#   docker builder prune -af
+#
+# The next build then takes a couple of minutes again instead of seconds.
