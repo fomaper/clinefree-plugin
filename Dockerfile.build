@@ -1,0 +1,13 @@
+FROM golang:1.26-bookworm
+WORKDIR /src
+COPY go.mod ./
+COPY main.go ./
+COPY main_test.go ./
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV GOFLAGS=-buildvcs=false
+# Tests first: they cover the retry-hint parser, the error classifier, tool-call
+# aggregation and the per-credential rate gate.
+RUN go test ./... -count=1
+RUN go build -buildmode=c-shared -trimpath -o /out/clinefree.so ./ && ls -l /out

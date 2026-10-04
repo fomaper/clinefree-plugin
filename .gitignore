@@ -1,0 +1,15 @@
+# build output
+dist/
+*.so
+*.dylib
+*.dll
+*.h
+
+# plugin runtime state (never commit: holds API keys)
+settings.json
+*-data/
+requests.json
+estimates.json
+
+# go
+*.test
