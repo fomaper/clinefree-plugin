@@ -494,7 +494,7 @@ func TestMergeAndDropKeys(t *testing.T) {
 }
 
 func TestManagementHandleListKeys(t *testing.T) {
-	stubSettings([]string{"sk_aaaaaaaaaaaaaaaaaaaaaaaa"})
+	stubSettings([]string{"sk_test_key_three"})
 	raw, _ := json.Marshal(map[string]any{"Method": "GET", "Path": consoleAPIPath + "/keys"})
 	out, err := managementHandle(raw)
 	if err != nil {
