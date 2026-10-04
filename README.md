@@ -84,6 +84,27 @@ curl http://<cpa-host>:8317/v1/chat/completions \
 - **No team-TPM handling.** Cline's free tier hits a *daily cap per account*, which arrives as a real HTTP `429` with a retry hint. The shared team/region tokens-per-minute limit that subscription accounts encounter was never observed on free-tier keys, so that branch is deliberately absent.
 - **Reasoning passthrough.** The upstream reasoning channel is forwarded as-is. Cline's free tier frequently reasons in English, so clients that render reasoning will show English text — that is upstream behaviour, not a transformation performed here.
 
+## Maintenance
+
+Everything needed to rebuild and redeploy is in `deploy.sh`. It packages the
+source, uploads it, builds inside the `golang` container **on the CPA host** (so
+no local Go toolchain is needed), installs the library under the name derived
+from `pluginVersion` in `main.go`, prunes older builds, reloads the plugin and
+verifies what came up:
+
+```bash
+NAS_HOST=<host> NAS_PASS='<ssh password>' CPA_MGMT_KEY='<cpa management key>' ./deploy.sh
+```
+
+Unit tests run as part of the build; a failing test aborts the deploy before
+anything is installed. The version lives in exactly one place — the
+`pluginVersion` constant in `main.go` — and the deployed file name follows it, so
+the panel, the host log and the file name cannot drift apart. To cut a new
+version, bump that constant and run the script again.
+
+Nothing secret lives in this repository: the ssh password and the management key
+are read from the environment at run time.
+
 ## Development
 
 ```bash
