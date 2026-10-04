@@ -93,7 +93,14 @@ from `pluginVersion` in `main.go`, prunes older builds, reloads the plugin and
 verifies what came up:
 
 ```bash
-NAS_HOST=<host> NAS_PASS='<ssh password>' CPA_MGMT_KEY='<cpa management key>' ./deploy.sh
+cp .env.example .env    # fill in host, ssh password, CPA config dir; .env is gitignored
+./deploy.sh
+```
+
+Or inline, without the env file:
+
+```bash
+NAS_HOST=<host> NAS_PASS='<ssh password>' CPA_DIR=<path> CPA_MGMT_KEY='<cpa management key>' ./deploy.sh
 ```
 
 Unit tests run as part of the build; a failing test aborts the deploy before
@@ -102,8 +109,9 @@ anything is installed. The version lives in exactly one place — the
 the panel, the host log and the file name cannot drift apart. To cut a new
 version, bump that constant and run the script again.
 
-Nothing secret lives in this repository: the ssh password and the management key
-are read from the environment at run time.
+Nothing machine-specific lives in this repository: host, port, ssh password,
+config directory and management key all come from the environment or from the
+gitignored `.env`.
 
 ## Development
 

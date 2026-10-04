@@ -13,3 +13,6 @@ estimates.json
 
 # go
 *.test
+
+# local deploy config (holds host + password)
+.env

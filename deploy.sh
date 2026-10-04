@@ -6,34 +6,39 @@
 # directory. Unit tests run as part of the build and a failure aborts the deploy.
 #
 # Usage:
-#   NAS_HOST=192.0.2.10 NAS_PASS='...' CPA_MGMT_KEY='...' ./deploy.sh
+#   cp .env.example .env && $EDITOR .env      # once, per machine
+#   ./deploy.sh
 #
-# Environment:
+# or inline:
+#   NAS_HOST=192.0.2.10 NAS_PASS='...' CPA_DIR=/path/to/cpa ./deploy.sh
+#
+# Environment (a local .env is sourced first; it is gitignored):
 #   NAS_HOST       required  host that runs the CPA container
 #   NAS_PASS       required  ssh password for that host
+#   CPA_DIR        required  CPA's config directory on that host
 #   CPA_MGMT_KEY   optional  CPA management key; when set the plugin is reloaded
 #                            and the deployed version is verified
-#   SSH_PORT       optional  default 707
+#   SSH_PORT       optional  default 22
 #   SSH_USER       optional  default root
 #   CPA_PORT       optional  default 8317
-#   CPA_DIR        optional  default /volume2/docker/cliproxyapi
-#   DOCKER         optional  default /usr/local/bin/docker
+#   DOCKER         optional  default docker (absolute path if not on PATH)
 #
-# Nothing secret is stored in this repo: the password and the management key are
-# read from the environment at run time.
+# Nothing secret is stored in this repo: the password and the management key live
+# in the environment or in the gitignored .env.
 
 set -euo pipefail
 
-NAS_HOST="${NAS_HOST:?set NAS_HOST to the host running CPA}"
-NAS_PASS="${NAS_PASS:?set NAS_PASS to the ssh password}"
+cd "$(dirname "$0")"
+[ -f .env ] && . ./.env
+
+NAS_HOST="${NAS_HOST:?set NAS_HOST (see .env.example)}"
+NAS_PASS="${NAS_PASS:?set NAS_PASS (see .env.example)}"
+CPA_DIR="${CPA_DIR:?set CPA_DIR (see .env.example)}"
 CPA_MGMT_KEY="${CPA_MGMT_KEY:-}"
-SSH_PORT="${SSH_PORT:-707}"
+SSH_PORT="${SSH_PORT:-22}"
 SSH_USER="${SSH_USER:-root}"
 CPA_PORT="${CPA_PORT:-8317}"
-CPA_DIR="${CPA_DIR:-/volume2/docker/cliproxyapi}"
-DOCKER="${DOCKER:-/usr/local/bin/docker}"
-
-cd "$(dirname "$0")"
+DOCKER="${DOCKER:-docker}"
 
 PLUGIN_ID="$(grep -E 'pluginID[[:space:]]+=' main.go | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
 VERSION="$(grep -E 'pluginVersion[[:space:]]+=' main.go | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
