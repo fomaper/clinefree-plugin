@@ -6,7 +6,7 @@
 # directory. Unit tests run as part of the build and a failure aborts the deploy.
 #
 # Usage:
-#   NAS_HOST=192.168.10.81 NAS_PASS='...' CPA_MGMT_KEY='...' ./deploy.sh
+#   NAS_HOST=192.0.2.10 NAS_PASS='...' CPA_MGMT_KEY='...' ./deploy.sh
 #
 # Environment:
 #   NAS_HOST       required  host that runs the CPA container
